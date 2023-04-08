@@ -1,20 +1,34 @@
-export default function get_input(file: File) {
-  var result;
+"use client";
 
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    const text = e.target?.result as string;
-    const rows = text.split("\n");
-    for (let row of rows) {
-      const cols = row.split(" ");
-      let cols_result = "";
-      for (let i = 1; i < cols.length; i++) {
-        cols_result += cols[i] + " ";
-      }
-      console.log(cols_result);
-    }
-    result = text;
+export interface Nodes {
+  [key: string]: {
+    name: string;
+    latitude: number;
+    longitude: number;
   };
-
-  reader.readAsText(file);
 }
+
+export interface Connections {
+  [key: string]: string[];
+}
+
+const calculate_distance = (
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+) => {
+  const radlat1 = (Math.PI * lat1) / 180;
+  const radlat2 = (Math.PI * lat2) / 180;
+  const theta = lon1 - lon2;
+  const radtheta = (Math.PI * theta) / 180;
+  let dist =
+    Math.sin(radlat1) * Math.sin(radlat2) +
+    Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+  if (dist > 1) dist = 1;
+  dist = Math.acos(dist);
+  dist = (dist * 180) / Math.PI;
+  dist = dist * 60 * 1.1515;
+  dist = dist * 1.609344;
+  return dist;
+};
