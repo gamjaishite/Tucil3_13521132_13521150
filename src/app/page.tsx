@@ -18,6 +18,7 @@ export default function Home() {
       get_input(event.currentTarget.elements.input_file.files![0]);
     }
   };
+
   return (
     <div className="text-pink-500">
       Here our journey begins....🎉⚡
