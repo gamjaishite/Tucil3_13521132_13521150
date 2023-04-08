@@ -1,0 +1,17 @@
+.text-blue{
+    color: #132766;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.bg-card-color{
+    background: #F5F2FF;
+    box-shadow: 2px 4px 8px 3px rgba(19, 39, 102, 0.25);
+    border-radius: 10px;
+}
+
+.button1{
+    background: #A1CAFE;
+}
