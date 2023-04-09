@@ -8,7 +8,7 @@ import {
   Polyline,
   useMap,
 } from "react-leaflet";
-import { Connections, Nodes } from "../lib/utils";
+import { Connections, Nodes, Path } from "../lib/utils";
 import { useEffect } from "react";
 import "../globals.css"
 
@@ -26,9 +26,11 @@ function CreateMarker({ nodes }: { nodes: Nodes }) {
 export default function Map({
   nodes,
   connections,
+  path,
 }: {
   nodes: Nodes;
   connections: Connections;
+  path: Path | undefined;
 }) {
   let marker: L.DivIcon[] = [];
   let connections_label: string[] = [];
@@ -72,19 +74,23 @@ export default function Map({
           <Popup></Popup>
         </Marker>
       ))}
-      {connections_label.map((key) => (
-        <>
-          {connections[key].map((item) => (
-            <Polyline
-              pathOptions={{ color: "#455896" }}
-              positions={[
-                [nodes[key].latitude, nodes[key].longitude],
-                [nodes[item].latitude, nodes[item].longitude],
-              ]}
-            />
-          ))}
-        </>
-      ))}
+      {connections_label.map((key, i) =>
+        connections[key].map((item, j) => (
+          <Polyline
+            key={`polyline-${i},${j}`}
+            pathOptions={{
+              color:
+                path && (path[key] === item || path[item] === key)
+                  ? "red"
+                  : "black",
+            }}
+            positions={[
+              [nodes[key].latitude, nodes[key].longitude],
+              [nodes[item].latitude, nodes[item].longitude],
+            ]}
+          />
+        ))
+      )}
     </MapContainer>
   );
 }
