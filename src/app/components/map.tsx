@@ -82,7 +82,7 @@ export default function Map({
               color:
                 path && (path[key] === item || path[item] === key)
                   ? "red"
-                  : "black",
+                  : "blue",
             }}
             positions={[
               [nodes[key].latitude, nodes[key].longitude],

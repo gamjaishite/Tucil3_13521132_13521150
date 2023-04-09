@@ -1,11 +1,13 @@
 "use client";
 
-import astar from "./algorithms/astar";
-import ucs from "./algorithms/ucs";
+import astar, { astarToString } from "./algorithms/astar";
+import ucs, { ucsToString } from "./algorithms/ucs";
 import Dropdown from "./components/dropdown";
 import Map from "./components/map";
 import { Connections, Nodes, Path } from "./lib/utils";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, use, useState } from "react";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface FormElements extends HTMLFormControlsCollection {
   input_file: HTMLInputElement;
@@ -22,6 +24,10 @@ export default function Home() {
   const [target, setTarget] = useState<string>();
   const [path, setPath] = useState<Path>();
   const [algorithm, setAlgorithm] = useState<string>("astar");
+  const [displayRoute, setdisplayRoute] = useState<String>();
+  const [displayCost, setdisplayCost] = useState<Number>();
+  const [displayTime, setdisplayTime] = useState<String>();
+
 
   const handleInitialButton = (value: string) => {
     setInitial(value);
@@ -34,8 +40,22 @@ export default function Home() {
   const handleStartButton = () => {
     if (nodes && connections && initial && target) {
       if (algorithm === "astar") {
+        let startTime = performance.now()
         let final_path = astar(nodes, connections, initial, target);
+        let endTime = performance.now()
         setPath(final_path);
+        let resultString = astarToString(final_path, initial, target, nodes);
+        setdisplayRoute(resultString);
+        setdisplayTime(((endTime-startTime).toFixed(4)).toString());
+      }
+      if (algorithm === "ucs"){
+        let startTime = performance.now()
+        let final_path = ucs(nodes, connections, initial, target);
+        let endTime = performance.now()
+        let stringPath = ucsToString(final_path, initial, target, nodes);
+        setPath(final_path);
+        setdisplayRoute(stringPath);
+        setdisplayTime(((endTime-startTime).toFixed(4)).toString());
       }
     }
   };
@@ -87,7 +107,7 @@ export default function Home() {
   };
 
   return (
-    <div className="text-biru">
+    <div className="text-biru h-screen">
       <Map nodes={nodes!} connections={connections!} path={path} />
       <div className="fixed left-20 top-20 z-[100000]">
         <div className="block max-w-md h-full p-7 bg-card-color">
@@ -170,16 +190,23 @@ export default function Home() {
               <button
                 type="button"
                 className="text-white w-full h-10 bg-blue-900 hover:bg-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none shadow-lg shadow-blue-500/50"
-                onClick={handleStartButton}
+                onClick={handleStartButton} 
               >
                 Start
               </button>
-              <p className="text-blue">Execution Time</p>
+              <div className="space-x-3">
+              <p onChange={handleStartButton} className="text-blue">Execution Time: {displayTime}</p>
+              </div>
             </div>
           </div>
-          <div className="space-y-28">
-            <p className="text-blue">Route</p>
+          <div className="space-y-24">
+            <div className="space-y-2">
+              <p className="text-blue">Route</p>
+              <p className="text-blue" onChange={handleStartButton}>{displayRoute}</p>
+            </div>
+            <div className="space-y-5">
             <p className="text-blue">Distance</p>
+            </div>
           </div>
         </div>
       </div>
