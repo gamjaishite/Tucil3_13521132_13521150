@@ -6,8 +6,7 @@ import Dropdown from "./components/dropdown";
 import Map from "./components/map";
 import { Connections, Nodes, Path } from "./lib/utils";
 import { ChangeEvent, use, useState } from "react";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';;
 
 interface FormElements extends HTMLFormControlsCollection {
   input_file: HTMLInputElement;
