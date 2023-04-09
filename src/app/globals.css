@@ -23,3 +23,7 @@
 .button1 {
   background: #a1cafe;
 }
+
+.nodes-color{
+  background: linear-gradient(180deg, #B1D1FA 0%, #81A4D1 100%);
+}

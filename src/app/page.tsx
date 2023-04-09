@@ -3,6 +3,7 @@
 import astar from "./algorithms/astar";
 import ucs from "./algorithms/ucs";
 import Map from "./components/map";
+import "./globals.css"
 import { Connections, Nodes } from "./lib/utils";
 import { useState } from "react";
 
@@ -72,8 +73,8 @@ export default function Home() {
             <div className="max-w-lg space-y-4">
               <div className="max-w-xs">
                 <p className="text-blue">Upload File</p>
-                <form onSubmit={handleSubmit}>
-                  <div className="relative w-32 text-white bg-blue-300 hover:bg-blue-800  font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 shadow-lg shadow-blue-500/50">
+                <form className="space-y-6"onSubmit={handleSubmit}>
+                  <div className="relative w-32 text-white bg-blue-300 hover:bg-blue-800  font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700  ">
                     <input
                       className="absolute z-[-1] w-full"
                       type="file"
@@ -90,7 +91,7 @@ export default function Home() {
                     </svg>
                     <label htmlFor="input_file">Upload File</label>
                   </div>
-                  <button type="submit">Visualize</button>
+                  <button className="text-white w-24 h-10 bg-blue-900 hover:bg-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none shadow-lg shadow-blue-500/50" type="submit">Visualize</button>
                 </form>
               </div>
               <div className="max-w-xs">
@@ -130,7 +131,7 @@ export default function Home() {
             </div>
             <div className="text-biru space-y-5">
               <div className="flex space-x-6 text-blue">
-                <div className="max-width-0">
+                <div id="start-node" className="max-width-0">
                   <p>Start</p>
                   <button
                     id="dropdownHoverButton"
@@ -147,10 +148,11 @@ export default function Home() {
                     >
                       <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
                     </svg>
+                  
                   </button>
                 </div>
 
-                <div className="max-width-0">
+                <div id = "goal-node" className="max-width-0">
                   <p>Goal</p>
                   <button
                     id="dropdownHoverButton"

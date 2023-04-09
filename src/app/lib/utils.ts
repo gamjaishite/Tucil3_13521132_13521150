@@ -12,7 +12,7 @@ export interface Connections {
   [key: string]: string[];
 }
 
-const calculate_distance = (
+export const calculate_distance = (
   lat1: number,
   lon1: number,
   lat2: number,
