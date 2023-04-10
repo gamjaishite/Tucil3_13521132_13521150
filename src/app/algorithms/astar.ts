@@ -89,5 +89,19 @@ export default function astar(
   }
   final_path.splice(0, 0, nodes[start].name);
 
-  return raw_final_path;
+  return {
+    raw_path: raw_final_path,
+    path: final_path,
+  };
+}
+
+export function astarToString(path: string[]) {
+  let beautified_path = "";
+  for (let i = 0; i < path.length; i++) {
+    if (i != 0) {
+      beautified_path += " -> ";
+    }
+    beautified_path += path[i];
+  }
+  return beautified_path;
 }

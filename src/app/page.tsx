@@ -1,11 +1,13 @@
 "use client";
 
-import astar from "./algorithms/astar";
-import ucs from "./algorithms/ucs";
+import astar, { astarToString } from "./algorithms/astar";
+import ucs, { ucsToString } from "./algorithms/ucs";
 import Dropdown from "./components/dropdown";
 import Map from "./components/map";
 import { Connections, Nodes, Path } from "./lib/utils";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, use, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface FormElements extends HTMLFormControlsCollection {
   input_file: HTMLInputElement;
@@ -22,6 +24,9 @@ export default function Home() {
   const [target, setTarget] = useState<string>();
   const [path, setPath] = useState<Path>();
   const [algorithm, setAlgorithm] = useState<string>("astar");
+  const [displayRoute, setdisplayRoute] = useState<String>();
+  const [displayCost, setdisplayCost] = useState<Number>();
+  const [displayTime, setdisplayTime] = useState<String>();
 
   const handleInitialButton = (value: string) => {
     setInitial(value);
@@ -34,9 +39,39 @@ export default function Home() {
   const handleStartButton = () => {
     if (nodes && connections && initial && target) {
       if (algorithm === "astar") {
-        let final_path = astar(nodes, connections, initial, target);
-        setPath(final_path);
+        let startTime = performance.now();
+        const result = astar(nodes, connections, initial, target);
+        let endTime = performance.now();
+        setPath(result.raw_path);
+        let resultString = astarToString(result.path);
+        setdisplayRoute(resultString);
+        setdisplayTime((endTime - startTime).toFixed(4).toString());
       }
+      if (algorithm === "ucs") {
+        let startTime = performance.now();
+        let final_path = ucs(nodes, connections, initial, target);
+        let endTime = performance.now();
+        let stringPath = ucsToString(final_path, initial, target, nodes);
+        setPath(final_path);
+        setdisplayRoute(stringPath);
+        setdisplayTime((endTime - startTime).toFixed(4).toString());
+      }
+    } else if (nodes && connections && !initial && !target) {
+      toast.error("Initial and target has not been decided!", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+    } else if (nodes && connections && initial && !target) {
+      toast.error("Target has not been decided!", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+    } else if (nodes && connections && !initial && target) {
+      toast.error("Start node has not been decided!", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+    } else {
+      toast.error("No Input File!", {
+        position: toast.POSITION.TOP_CENTER,
+      });
     }
   };
 
@@ -87,8 +122,9 @@ export default function Home() {
   };
 
   return (
-    <div className="text-biru">
+    <div className="text-biru h-screen">
       <Map nodes={nodes!} connections={connections!} path={path} />
+      <ToastContainer />
       <div className="fixed left-20 top-20 z-[100000]">
         <div className="block max-w-md h-full p-7 bg-card-color">
           <img src="/findroute.svg"></img>
@@ -96,8 +132,8 @@ export default function Home() {
             <div className="max-w-lg space-y-4">
               <div className="max-w-xs">
                 <p className="text-blue">Upload File</p>
-                <form onSubmit={handleSubmit}>
-                  <div className="relative w-32 text-white bg-blue-300 hover:bg-blue-800  font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 shadow-lg shadow-blue-500/50">
+                <form className="space-y-6" onSubmit={handleSubmit}>
+                  <div className="relative w-32 text-white bg-blue-300 hover:bg-blue-800  font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700  ">
                     <input
                       className="absolute z-[-1] w-full"
                       type="file"
@@ -174,12 +210,23 @@ export default function Home() {
               >
                 Start
               </button>
-              <p className="text-blue">Execution Time</p>
+              <div className="space-x-3">
+                <p onChange={handleStartButton} className="text-blue">
+                  Execution Time: {displayTime}
+                </p>
+              </div>
             </div>
           </div>
-          <div className="space-y-28">
-            <p className="text-blue">Route</p>
-            <p className="text-blue">Distance</p>
+          <div className="space-y-24">
+            <div className="space-y-2">
+              <p className="text-blue">Route</p>
+              <p className="text-blue" onChange={handleStartButton}>
+                {displayRoute}
+              </p>
+            </div>
+            <div className="space-y-5">
+              <p className="text-blue">Distance</p>
+            </div>
           </div>
         </div>
       </div>

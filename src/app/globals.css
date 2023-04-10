@@ -8,7 +8,6 @@
 
 .text-blue {
   color: #132766;
-  font-family: "Inter";
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
@@ -22,4 +21,37 @@
 
 .button1 {
   background: #a1cafe;
+}
+
+.nodes-color {
+  background: linear-gradient(180deg, #b1d1fa 0%, #81a4d1 100%);
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  /* font-family: "Inter", sans-serif; */
+  background: #c7daff;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--secondary) var(--primary);
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--primary);
+  border-radius: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--secondary);
+  border-radius: 14px;
+  border: 3px solid var(--primary);
 }
