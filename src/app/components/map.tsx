@@ -10,6 +10,7 @@ import {
 } from "react-leaflet";
 import { Connections, Nodes, Path } from "../lib/utils";
 import { useEffect } from "react";
+import "../globals.css"
 
 function CreateMarker({ nodes }: { nodes: Nodes }) {
   const map = useMap();
@@ -38,7 +39,7 @@ export default function Map({
       marker.push(
         L.divIcon({
           className:
-            "bg-pink-400 w-10 h-10 rounded-full flex items-center justify-center font-bold text-2xl",
+            "nodes-color w-10 h-10 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg shadow-blue-900",
           html: `<div>${nodes[item].name}</div>`,
           iconSize: [30, 30],
           iconAnchor: [15, 30],
@@ -81,7 +82,7 @@ export default function Map({
               color:
                 path && (path[key] === item || path[item] === key)
                   ? "red"
-                  : "black",
+                  : "blue",
             }}
             positions={[
               [nodes[key].latitude, nodes[key].longitude],

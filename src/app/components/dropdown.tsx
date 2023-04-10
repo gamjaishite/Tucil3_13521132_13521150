@@ -3,6 +3,7 @@
 import React from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Nodes } from "../lib/utils";
+import "../globals.css";
 
 const Dropdown = ({
   label,
@@ -36,13 +37,13 @@ const Dropdown = ({
         <DropdownMenu.Content
           className={`${
             nodes ? "" : "hidden"
-          } min-w-[220px] bg-blue-600 rounded-md p-[5px] z-[1000000] shadow-xl max-h-64 overflow-auto`}
+          } min-w-[100px] bg-blue-200 rounded-md p-[5px] z-[1000000] shadow-xl max-h-64 overflow-auto`}
         >
           <DropdownMenu.Label />
           {nodes &&
             Object.keys(nodes).map((item, i) => (
               <DropdownMenu.Item
-                className="text-zinc-50 focus:outline-none flex justify-center p-2 cursor-pointer hover:bg-blue-500 rounded-md border border-blue-500 m-1"
+                className="text-blue focus:outline-none flex justify-center p-2 cursor-pointer hover:bg-blue-500 rounded-md "
                 key={`item-${i}`}
               >
                 <button

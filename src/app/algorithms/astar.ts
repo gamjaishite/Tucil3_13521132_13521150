@@ -91,3 +91,17 @@ export default function astar(
 
   return raw_final_path;
 }
+
+export function astarToString(path: Path, start: string, goal: string, nodes: Nodes): string {
+  let finalPath: string[] = []; 
+  let currentNode = goal; 
+
+  while (currentNode !== start) {
+    finalPath.splice(0, 0, nodes[currentNode].name);
+    currentNode = path[currentNode];
+  }
+
+  finalPath.splice(0, 0, nodes[start].name);
+  let final = finalPath.join(" -> ");
+  return final;
+}
