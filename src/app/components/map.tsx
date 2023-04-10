@@ -6,9 +6,10 @@ import {
   Marker,
   Popup,
   Polyline,
+  SVGOverlay,
   useMap,
 } from "react-leaflet";
-import { Connections, Nodes, Path } from "../lib/utils";
+import calculate_distance, { Connections, Nodes, Path } from "../lib/utils";
 import { useEffect } from "react";
 
 function CreateMarker({ nodes }: { nodes: Nodes }) {
@@ -75,19 +76,43 @@ export default function Map({
       ))}
       {connections_label.map((key, i) =>
         connections[key].map((item, j) => (
-          <Polyline
-            key={`polyline-${i},${j}`}
-            pathOptions={{
-              color:
-                path && (path[key] === item || path[item] === key)
-                  ? "red"
-                  : "black",
-            }}
-            positions={[
-              [nodes[key].latitude, nodes[key].longitude],
-              [nodes[item].latitude, nodes[item].longitude],
-            ]}
-          />
+          <div key={`polyline-${i},${j}`}>
+            <Polyline
+              pathOptions={{
+                color:
+                  path && (path[key] === item || path[item] === key)
+                    ? "red"
+                    : "black",
+              }}
+              positions={[
+                [nodes[key].latitude, nodes[key].longitude],
+                [nodes[item].latitude, nodes[item].longitude],
+              ]}
+            />
+            <SVGOverlay
+              bounds={[
+                [
+                  (nodes[key].latitude + nodes[item].latitude) / 2.0 - 0.0001,
+                  (nodes[key].longitude + nodes[item].longitude) / 2.0 - 0.0002,
+                ],
+                [
+                  (nodes[key].latitude + nodes[item].latitude) / 2.0 + 0.0001,
+                  (nodes[key].longitude + nodes[item].longitude) / 2.0 + 0.0002,
+                ],
+              ]}
+            >
+              {" "}
+              <rect x="0" y="0" width="100%" height="100%" fill="gray" />
+              <text x="10%" y="50%" stroke="white">
+                {calculate_distance(
+                  nodes[key].latitude,
+                  nodes[key].longitude,
+                  nodes[item].latitude,
+                  nodes[item].longitude
+                ).toFixed(4)}
+              </text>
+            </SVGOverlay>
+          </div>
         ))
       )}
     </MapContainer>

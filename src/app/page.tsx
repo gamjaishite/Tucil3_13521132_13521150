@@ -52,8 +52,8 @@ export default function Home() {
         const data_amount = parseInt(rows[0]);
 
         for (let i = 1; i <= data_amount; i++) {
-          const label = rows[i].split(" ")[0];
-          const coors = rows[i].split(" ")[1].slice(1, -1);
+          const label = rows[i].trim().split(" ")[0];
+          const coors = rows[i].trim().split(" ")[1].slice(1, -1);
           const latitude = parseFloat(coors.split(",")[0]);
           const longitude = parseFloat(coors.split(",")[1]);
           raw_nodes[i - 1] = {
@@ -65,7 +65,7 @@ export default function Home() {
 
         const raw_connections: Connections = {};
         for (let i = data_amount + 1; i <= 2 * data_amount; i++) {
-          const cols = rows[i].split(" ");
+          const cols = rows[i].trim().split(" ");
           for (let j = 0; j < data_amount; j++) {
             if (cols[j] === "1") {
               raw_connections[i - data_amount - 1]
