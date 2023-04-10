@@ -39,7 +39,7 @@ export default function Map({
       marker.push(
         L.divIcon({
           className:
-            "nodes-color shadow-lg shadow-blue-900 w-10 h-10 rounded-full flex items-center justify-center font-bold text-blue-900 text-2xl",
+            "nodes-color w-10 h-10 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg shadow-blue-900",
           html: `<div>${nodes[item].name}</div>`,
           iconSize: [30, 30],
           iconAnchor: [15, 30],

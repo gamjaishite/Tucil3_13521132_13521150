@@ -6,7 +6,8 @@ import Dropdown from "./components/dropdown";
 import Map from "./components/map";
 import { Connections, Nodes, Path } from "./lib/utils";
 import { ChangeEvent, use, useState } from "react";
-import { toast } from 'react-toastify';;
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface FormElements extends HTMLFormControlsCollection {
   input_file: HTMLInputElement;
@@ -56,6 +57,23 @@ export default function Home() {
         setdisplayRoute(stringPath);
         setdisplayTime(((endTime-startTime).toFixed(4)).toString());
       }
+    } else if (nodes && connections && !initial && !target){
+      toast.error('Initial and target has not been decided!', {
+        position: toast.POSITION.TOP_CENTER
+      });
+      
+    } else if(nodes && connections && initial && !target){
+      toast.error('Target has not been decided!', {
+        position: toast.POSITION.TOP_CENTER
+      });
+    } else if(nodes && connections && !initial && target){
+      toast.error('Start node has not been decided!', {
+        position: toast.POSITION.TOP_CENTER
+      });
+    } else{
+      toast.error('No Input File!', {
+        position: toast.POSITION.TOP_CENTER
+      });
     }
   };
 
@@ -108,6 +126,7 @@ export default function Home() {
   return (
     <div className="text-biru h-screen">
       <Map nodes={nodes!} connections={connections!} path={path} />
+      <ToastContainer/>
       <div className="fixed left-20 top-20 z-[100000]">
         <div className="block max-w-md h-full p-7 bg-card-color">
           <img src="/findroute.svg"></img>
