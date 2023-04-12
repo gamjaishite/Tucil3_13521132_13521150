@@ -9,7 +9,7 @@ interface GraphComponentProps {
 }
 
 export default function GraphComponent({ nodes, connections, path }: GraphComponentProps) {
-  
+
   if (!nodes || !connections) {
     return null;
   }
@@ -22,7 +22,11 @@ export default function GraphComponent({ nodes, connections, path }: GraphCompon
     })),
     edges: Object.keys(connections).reduce((edgesArray, key) => {
       const fromNode = parseInt(key);
-      const toNodes = connections[key].map((toNode) => ({ from: fromNode, to: parseInt(toNode) }));
+      const toNodes = connections[key].map((toNode) => ({
+        from: fromNode,
+        to: parseInt(toNode),
+        color: path && path[fromNode] === toNode ? { color: "red" } : { color: "#455896" }, // Change edge color based on path
+      }));
       return [...edgesArray, ...toNodes];
     }, []),
   };
@@ -30,9 +34,6 @@ export default function GraphComponent({ nodes, connections, path }: GraphCompon
   const options = {
     layout: {
       hierarchical: false,
-    },
-    edges: {
-      color: "#455896"
     },
     height: "600px",
   };
@@ -43,5 +44,5 @@ export default function GraphComponent({ nodes, connections, path }: GraphCompon
     },
   };
 
-  return <Graph graph={graph} options={options} events={events}  />;
+  return <Graph graph={graph} options={options} events={events} />;
 }
