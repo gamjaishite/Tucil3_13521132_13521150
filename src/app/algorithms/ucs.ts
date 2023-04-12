@@ -23,7 +23,7 @@ export default function ucs(
     let current = currentElement!.node;
 
     if (current === goal) {
-      return raw_path;
+      break;
     }
 
     explored.add(current); 
@@ -34,7 +34,7 @@ export default function ucs(
       for (const neighbor of neighbors) {
         if (!explored.has(neighbor)) { 
           let newCost = costSoFar[current].f_score + calculate_distance(nodes[current].latitude, nodes[current].longitude, nodes[neighbor].latitude, nodes[neighbor].longitude);
-          if (!costSoFar[neighbor] || newCost < costSoFar[neighbor].f_score) {
+          if (!costSoFar[neighbor] || newCost > costSoFar[neighbor].f_score) {
             costSoFar[neighbor] = { f_score: newCost };
             let priority = newCost;
             let newElement: QueueElementUCS = {
@@ -59,37 +59,20 @@ export default function ucs(
   }
   final_path.splice(0, 0, nodes[start].name);
 
-  return raw_final_path;
+  return {
+    raw_path: raw_final_path,
+    path: final_path,
+    cost: costSoFar[goal] ? costSoFar[goal].f_score : undefined
+  };
 }
 
-export function ucsToString(path: Path, start: string, goal: string, nodes: Nodes): string {
-  let finalPath: string[] = []; 
-  let currentNode = goal; 
-
-  while (currentNode !== start) {
-    finalPath.splice(0, 0, nodes[currentNode].name);
-    currentNode = path[currentNode];
+export function ucsToString(path: string[]) {
+  let beautified_path = "";
+  for (let i = 0; i < path.length; i++) {
+    if (i != 0) {
+      beautified_path += " -> ";
+    }
+    beautified_path += path[i];
   }
-
-  finalPath.splice(0, 0, nodes[start].name);
-  let final = finalPath.join(" -> ");
-  return final;
-}
-
-export function returnCost(path: Path, start: string, goal: string, nodes: Nodes): number {
-  let total: number = 0;
-  let currentNode = goal;
-
-  while (currentNode !== start) {
-    total +=
-      calculate_distance(
-        nodes[currentNode].latitude,
-        nodes[currentNode].longitude,
-        nodes[path[currentNode]].latitude,
-        nodes[path[currentNode]].longitude
-      );
-    currentNode = path[currentNode];
-  }
-
-  return total;
+  return beautified_path;
 }
