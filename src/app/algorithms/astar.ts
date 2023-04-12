@@ -46,7 +46,7 @@ export default function astar(
             break;
         }
 
-        if (connections[current_node]) {
+        if (current_node && connections[current_node]) {
             for (let neighbor_node of connections[current_node!]) {
                 let temp_g_score =
                     elements[current_node!].g_score +

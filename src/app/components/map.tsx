@@ -1,3 +1,5 @@
+"use client"
+
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import {
@@ -61,7 +63,7 @@ function RemoveEdge({
         setNodes({...nodes})
         setInitial(undefined)
         setTarget(undefined)
-        if (!nodes[currentSelectedNode - 1]) {
+        if (currentSelectedNode && !nodes[currentSelectedNode - 1]) {
             markers[0].setIcon(L.divIcon({
                 className:
                     "bg-pink-300 w-10 h-10 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg shadow-blue-900",
@@ -192,6 +194,7 @@ function GetLatitudeLongitudeOnClick({
                 iconAnchor: [15, 30],
             });
 
+            //@ts-ignore
             let new_marker: any = new L.marker(e.latlng, {
                 icon: iconOptsNormal,
             });
@@ -310,7 +313,7 @@ export default function Map({
 
     let marker: L.DivIcon[] = [];
     let connections_label: string[] = [];
-    
+
     if (Object.keys(nodes).length > 0 && mode === "file") {
         for (let item in nodes) {
             marker.push(
@@ -357,7 +360,7 @@ export default function Map({
                 setTarget={(value) => setTarget(value)}
                 setCurrentSelectedNode={(value) => {
                     setCurrentSelectedNode(value);
-                    setSelectedInitialNode((value - 1)?.toString())
+                    setSelectedInitialNode((value! - 1)?.toString())
                 }}
                 setConnections={(value) => handleSetConnections(value)}
                 setNodes={(value) => handleSetNodes(value)}

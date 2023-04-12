@@ -1,3 +1,5 @@
+"use client"
+
 import React from "react";
 //@ts-ignore
 import Graph from "react-graph-vis";
@@ -21,6 +23,7 @@ export default function GraphComponent({nodes, connections, path}: GraphComponen
             label: nodes[key].name,
             title: nodes[key].name,
         })),
+        // @ts-ignore
         edges: Object.keys(connections).reduce((edgesArray, key) => {
             const fromNode = parseInt(key);
             const toNodes = connections[key].map((toNode) => ({
@@ -40,7 +43,7 @@ export default function GraphComponent({nodes, connections, path}: GraphComponen
     };
 
     const events = {
-        select: function (event) {
+        select: function (event: any) {
             var {nodes, edges} = event;
         },
     };

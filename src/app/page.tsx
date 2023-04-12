@@ -7,12 +7,13 @@ import Map from "./components/map";
 import {Connections, Edges, Nodes, Path} from "./lib/utils";
 import {ChangeEvent, use, useState} from "react";
 import {ToastContainer, toast} from "react-toastify";
-import GraphComponent from "./graph/page";
+import GraphComponent from "./graph/graph";
 import "react-toastify/dist/ReactToastify.css";
 import L from "leaflet";
 import SwitchFile from "./components/switch_file";
 import SwitchNewNode from "@/app/components/switch_new_node";
 import DropdownNewEdge from "@/app/components/dropdown_new_edge";
+import Link from "next/link";
 
 interface FormElements extends HTMLFormControlsCollection {
     input_file: HTMLInputElement;
@@ -61,6 +62,7 @@ export default function Home() {
     const handleTargetButton = (value: string) => {
         setTarget(value);
     };
+
 
     const handleStartButton = () => {
         if (nodes && connections && initial && target) {
@@ -217,6 +219,13 @@ export default function Home() {
 
     return (
         <div className="text-biru h-screen">
+            <Link href='/how-to' className='fixed bottom-10 right-5 w-14 rounded-full bg-card-color p-2 z-[100000]'>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                     stroke="currentColor" className="w-10 h-10">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
+                </svg>
+            </Link>
             <div className={`${enabled ? 'hidden' : 'fixed'} right-3 top-3 z-[100000] bg-card-color p-2`}>
                 <div className="flex flex-col items-start">
                     <SwitchFile
@@ -415,7 +424,7 @@ export default function Home() {
                             </p>
                         </div>
                         <div className="space-y-5">
-                            <p className="text-blue">Distance: {displayCost}</p>
+                            <p className="text-blue">Distance: {displayCost?.toString()}</p>
                         </div>
                     </div>
                     {mode === 'manual' &&
