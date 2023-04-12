@@ -41,6 +41,8 @@ P (-6.923100,107.603892)
 0 1 0 0 0 0 0 0 0 0 0 0 1 0 1 0
 ```
 
+> Element of matrix adjecency must be 0 (not connect) or 1 (connect)
+
 # How to Run
 1. Clone this repository
 2. Go to src folder `cd src`
