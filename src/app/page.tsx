@@ -68,11 +68,17 @@ export default function Home() {
                 let startTime = performance.now();
                 const result = astar(nodes, connections, initial, target);
                 let endTime = performance.now();
-                setPath(result.raw_path);
-                let resultString = astarToString(result.path);
-                setdisplayRoute(resultString);
-                setdisplayTime((endTime - startTime).toFixed(4).toString());
-                setdisplayCost(result.cost);
+                if (result.path) {
+                    setPath(result.raw_path);
+                    let resultString = astarToString(result.path);
+                    setdisplayRoute(resultString);
+                    setdisplayTime((endTime - startTime).toFixed(4).toString());
+                    setdisplayCost(result.cost);
+                } else {
+                    toast.warning("No Solution Found!", {
+                        position: toast.POSITION.TOP_CENTER,
+                    });
+                }
             }
             if (algorithm === "ucs") {
                 let startTime = performance.now();

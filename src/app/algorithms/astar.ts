@@ -38,47 +38,58 @@ export default function astar(
 
     let raw_path: Path = {};
     let total_cost = 0;
+    let current_node;
     while (!open_nodes.empty()) {
-        let current_node = open_nodes.dequeu()?.node;
+        current_node = open_nodes.dequeu()?.node;
         if (current_node === destination) {
             total_cost = elements[current_node].g_score;
             break;
         }
 
-        for (let neighbor_node of connections[current_node!]) {
-            let temp_g_score =
-                elements[current_node!].g_score +
-                calculate_distance(
-                    nodes[current_node!].latitude,
-                    nodes[current_node!].longitude,
+        if (connections) {
+            for (let neighbor_node of connections[current_node!]) {
+                let temp_g_score =
+                    elements[current_node!].g_score +
+                    calculate_distance(
+                        nodes[current_node!].latitude,
+                        nodes[current_node!].longitude,
+                        nodes[neighbor_node].latitude,
+                        nodes[neighbor_node].longitude
+                    );
+
+                let heuristic_child_node = calculate_distance(
                     nodes[neighbor_node].latitude,
-                    nodes[neighbor_node].longitude
+                    nodes[neighbor_node].longitude,
+                    nodes[destination].latitude,
+                    nodes[destination].longitude
                 );
 
-            let heuristic_child_node = calculate_distance(
-                nodes[neighbor_node].latitude,
-                nodes[neighbor_node].longitude,
-                nodes[destination].latitude,
-                nodes[destination].longitude
-            );
+                let temp_f_score = temp_g_score + heuristic_child_node;
 
-            let temp_f_score = temp_g_score + heuristic_child_node;
+                if (temp_f_score < elements[neighbor_node].f_score) {
+                    elements[neighbor_node].g_score = temp_g_score;
+                    elements[neighbor_node].f_score = temp_f_score;
 
-            if (temp_f_score < elements[neighbor_node].f_score) {
-                elements[neighbor_node].g_score = temp_g_score;
-                elements[neighbor_node].f_score = temp_f_score;
+                    let child_node: QueueElementAStar = {
+                        heuristic_score: heuristic_child_node,
+                        final_score: temp_f_score,
+                        node: neighbor_node,
+                    };
 
-                let child_node: QueueElementAStar = {
-                    heuristic_score: heuristic_child_node,
-                    final_score: temp_f_score,
-                    node: neighbor_node,
-                };
+                    open_nodes.enqueue(child_node);
 
-                open_nodes.enqueue(child_node);
-
-                raw_path[neighbor_node] = current_node!;
+                    raw_path[neighbor_node] = current_node!;
+                }
             }
         }
+    }
+
+    if (current_node !== destination) {
+        return {
+            raw_path: undefined,
+            path: undefined,
+            cost: undefined,
+        };
     }
 
     let raw_final_path: Path = {};
