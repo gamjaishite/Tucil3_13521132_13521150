@@ -1,77 +1,49 @@
-"use client";
-
+import React from "react";
 //@ts-ignore
-import CytoscapeComponent from "react-cytoscapejs";
+import Graph from "react-graph-vis";
+import {Connections, Nodes, Path} from "../lib/utils";
 
-export default function Graph() {
-  const elements = [
-    { data: { id: "one", label: "Node 1" }, position: { x: 100, y: 100 } },
-    { data: { id: "two", label: "Node 2" }, position: { x: 200, y: 200 } },
-    {
-      data: { source: "one", target: "two", label: "Edge from Node1 to Node2" },
-    },
-  ];
-  return (
-    <CytoscapeComponent
-      elements={CytoscapeComponent.normalizeElements({
-        nodes: [
-          {
-            data: { id: "one", label: "A" },
-            position: { x: 1, y: 1 },
-          },
-          {
-            data: { id: "two", label: "B" },
-            position: { x: 3, y: 3 },
-          },
-          {
-            data: { id: "C", label: "C" },
-            position: { x: 150, y: 100 },
-          },
-        ],
-        edges: [
-          {
-            data: {
-              source: "one",
-              target: "two",
-              label: "AB",
-            },
-          },
-          {
-            data: {
-              source: "two",
-              target: "C",
-              label: "BC",
-            },
-          },
-        ],
-      })}
-      stylesheet={[
-        {
-          selector: "node",
-          style: {
-            width: 1,
-            height: 1,
-            label: "data(label)",
-            "font-size": 1,
-          },
+interface GraphComponentProps {
+    nodes: Nodes;
+    connections: Connections;
+    path: Path;
+}
+
+export default function GraphComponent({nodes, connections, path}: GraphComponentProps) {
+
+    if (!nodes || !connections) {
+        return null;
+    }
+
+    const graph = {
+        nodes: Object.keys(nodes).map((key) => ({
+            id: key,
+            label: nodes[key].name,
+            title: nodes[key].name,
+        })),
+        edges: Object.keys(connections).reduce((edgesArray, key) => {
+            const fromNode = parseInt(key);
+            const toNodes = connections[key].map((toNode) => ({
+                from: fromNode,
+                to: parseInt(toNode),
+                color: path && path[fromNode] === toNode ? {color: "red"} : {color: "#455896"}, // Change edge color based on path
+            }));
+            return [...edgesArray, ...toNodes];
+        }, []),
+    };
+
+    const options = {
+        layout: {
+            hierarchical: false,
         },
-        {
-          selector: "edge",
-          style: {
-            width: 0.2,
-            label: "data(label)",
-            "font-size": 1,
-          },
+        height: "600px",
+    };
+
+    const events = {
+        select: function (event) {
+            var {nodes, edges} = event;
         },
-      ]}
-      panningEnabled={true}
-      autolock={true}
-      maxZoom={10}
-      minZoom={1}
-      zoom={10}
-      boxSelectionEnabled={false}
-      autounselectify={true}
-      className="w-full h-screen text-sm"
-    />
-  );
+    };
+
+    return <Graph graph={graph} options={options} events={events}/>;
 }

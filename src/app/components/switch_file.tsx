@@ -6,7 +6,7 @@ export default function SwitchFile({
                                    }: {
     setFile: (x: boolean) => void;
 }) {
-    const [isChecked, setIsChecked] = useState(false)
+    const [isChecked, setIsChecked] = useState(true)
     return (
         <SwitchComponent isChecked={isChecked} setIsChecked={(value) => {
             setFile(value)

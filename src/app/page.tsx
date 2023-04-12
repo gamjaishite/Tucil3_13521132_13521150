@@ -5,8 +5,9 @@ import ucs, {ucsToString} from "./algorithms/ucs";
 import Dropdown from "./components/dropdown";
 import Map from "./components/map";
 import {Connections, Edges, Nodes, Path} from "./lib/utils";
-import {ChangeEvent, useState} from "react";
+import {ChangeEvent, use, useState} from "react";
 import {ToastContainer, toast} from "react-toastify";
+import GraphComponent from "./graph/page";
 import "react-toastify/dist/ReactToastify.css";
 import L from "leaflet";
 import SwitchFile from "./components/switch_file";
@@ -22,6 +23,7 @@ interface FileInputFormElement extends HTMLFormElement {
 }
 
 export default function Home() {
+
     const [nodes, setNodes] = useState<Nodes>({});
     const [connections, setConnections] = useState<Connections>({});
     const [initial, setInitial] = useState<string>();
@@ -29,16 +31,17 @@ export default function Home() {
     const [path, setPath] = useState<Path>();
     const [algorithm, setAlgorithm] = useState<string>("astar");
     const [displayRoute, setdisplayRoute] = useState<String>();
-    // const [displayCost, setdisplayCost] = useState<Number>();
+    const [displayCost, setdisplayCost] = useState<Number>();
     const [displayTime, setdisplayTime] = useState<String>();
     const [markers, setMarkers] = useState<L.Marker[]>([]);
     const [polylines, setPolylines] = useState<L.Polyline[]>([]);
     const [edges, setEdges] = useState<Edges[]>([]);
-    const [mode, setMode] = useState<string>("manual");
+    const [mode, setMode] = useState<string>("file");
     const [removeAll, setRemoveAll] = useState<boolean>(false);
     const [isNewNode, setIsNewNode] = useState<boolean>(true);
     const [selectedInitialNode, setSelectedInitialNode] = useState<string>("0");
     const [selectedTargetNode, setSelectedTargetNode] = useState<string>();
+    const [enabled, setEnabled] = useState(false);
 
     const [initialRemove, setInitialRemove] = useState<number>();
     const [targetRemove, setTargetRemove] = useState<number>();
@@ -69,15 +72,18 @@ export default function Home() {
                 let resultString = astarToString(result.path);
                 setdisplayRoute(resultString);
                 setdisplayTime((endTime - startTime).toFixed(4).toString());
+                setdisplayCost(result.cost);
             }
             if (algorithm === "ucs") {
                 let startTime = performance.now();
                 let final_path = ucs(nodes, connections, initial, target);
                 let endTime = performance.now();
-                let stringPath = ucsToString(final_path, initial, target, nodes);
-                setPath(final_path);
+                let stringPath = ucsToString(final_path.path);
+                let cost = (final_path.cost);
+                setPath(final_path.raw_path);
                 setdisplayRoute(stringPath);
                 setdisplayTime((endTime - startTime).toFixed(4).toString());
+                setdisplayCost(cost);
             }
         } else if (nodes && connections && !initial && !target) {
             toast.error("Initial and target has not been decided!", {
@@ -111,10 +117,31 @@ export default function Home() {
                 const data_amount = parseInt(rows[0]);
 
                 for (let i = 1; i <= data_amount; i++) {
+                    if (rows[i].trim().split(" ").length != 2) {
+                        toast.error("Invalid input. Invalid node", {
+                            position: toast.POSITION.TOP_CENTER,
+                        });
+                        return;
+                    }
                     const label = rows[i].trim().split(" ")[0];
                     const coors = rows[i].trim().split(" ")[1].slice(1, -1);
                     const latitude = parseFloat(coors.split(",")[0]);
                     const longitude = parseFloat(coors.split(",")[1]);
+
+                    if (isNaN(latitude) || isNaN(longitude)) {
+                        toast.error("Invalid input. Invalid coordinates", {
+                            position: toast.POSITION.TOP_CENTER,
+                        });
+                        return;
+                    }
+
+                    if (!enabled && (latitude < -180 || latitude > 180 || longitude < -180 || longitude > 180)) {
+                        toast.error("Invalid input. Invalid latitude or longitude", {
+                            position: toast.POSITION.TOP_CENTER,
+                        });
+                        return;
+                    }
+
                     raw_nodes[i - 1] = {
                         name: label,
                         latitude,
@@ -125,7 +152,19 @@ export default function Home() {
                 const raw_connections: Connections = {};
                 for (let i = data_amount + 1; i <= 2 * data_amount; i++) {
                     const cols = rows[i].trim().split(" ");
+                    if (cols.length < data_amount) {
+                        toast.error("Invalid input. Not complete adj matrix", {
+                            position: toast.POSITION.TOP_CENTER,
+                        });
+                        return;
+                    }
                     for (let j = 0; j < data_amount; j++) {
+                        if (cols[j] !== "1" && cols[j] !== "0") {
+                            toast.error("Invalid input. Invalid adj matrix element", {
+                                position: toast.POSITION.TOP_CENTER,
+                            });
+                            return;
+                        }
                         if (cols[j] === "1") {
                             raw_connections[i - data_amount - 1]
                                 ? raw_connections[i - data_amount - 1].push(j.toString())
@@ -136,6 +175,10 @@ export default function Home() {
 
                 setNodes(raw_nodes);
                 setConnections(raw_connections);
+                setPath(undefined);
+                setdisplayCost(undefined);
+                setdisplayRoute(undefined);
+                setdisplayTime(undefined);
             };
             reader.readAsText(event.currentTarget.files![0]);
             event.currentTarget.value = "";
@@ -174,34 +217,61 @@ export default function Home() {
                 </div>
             </div>
 
-            <Map
-                mode={mode}
-                nodes={nodes!}
-                connections={connections!}
-                path={path}
-                removeAll={removeAll}
-                markers={markers}
-                polylines={polylines!}
-                edges={edges!}
-                isNewNode={isNewNode}
-                initial={initialRemove}
-                target={targetRemove}
-                setInitialRemove={(value) => setInitialRemove(value)}
-                setTargetRemove={(value) => setTargetRemove(value)}
-                handleSetPolyline={(value) => handleSetPolyline(value!)}
-                handleSetEdges={(value) => handleSetEdges(value!)}
-                handleSetConnections={(value) => setConnections(value!)}
-                handleSetNodes={(value) => setNodes(value!)}
-                handleSetMarkers={(value) => setMarkers(value)}
-                handleSetRemoveAll={(value) => setRemoveAll((value))}
-                setSelectedInitialNode={(value) => setSelectedInitialNode(value)}
-            />
+            {enabled === true ? (
+                <GraphComponent nodes={nodes!} connections={connections!} path={path!}/>
+            ) : (
+                <Map
+                    mode={mode}
+                    nodes={nodes!}
+                    connections={connections!}
+                    path={path}
+                    removeAll={removeAll}
+                    markers={markers}
+                    polylines={polylines!}
+                    edges={edges!}
+                    isNewNode={isNewNode}
+                    initial={initialRemove}
+                    target={targetRemove}
+                    setInitialRemove={(value) => setInitialRemove(value)}
+                    setTargetRemove={(value) => setTargetRemove(value)}
+                    handleSetPolyline={(value) => handleSetPolyline(value!)}
+                    handleSetEdges={(value) => handleSetEdges(value!)}
+                    handleSetConnections={(value) => setConnections(value!)}
+                    handleSetNodes={(value) => setNodes(value!)}
+                    handleSetMarkers={(value) => setMarkers(value)}
+                    handleSetRemoveAll={(value) => setRemoveAll((value))}
+                    setSelectedInitialNode={(value) => setSelectedInitialNode(value)}
+                />
+            )}
+
+
             <ToastContainer/>
 
 
             <div className="fixed left-14 top-3 z-[100000]">
                 <div className="block max-w-md p-7 bg-card-color">
                     <img src="/findroute.svg" className="mb-8"/>
+                    <div>
+                        <label className="inline-flex relative items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                className="sr-only peer"
+                                checked={enabled}
+                                readOnly
+                            />
+                            <div
+                                onClick={() => {
+                                    setEnabled(!enabled);
+                                    setNodes({});
+                                    setConnections({});
+                                }}
+                                className="w-11 h-6 bg-gray-200 rounded-full peer  peer-focus:ring-green-300  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+                            ></div>
+                            <span className="ml-2 text-sm font-medium text-gray-900">
+                                Graph
+                            </span>
+                        </label>
+                    </div>
                     <div className="flex space-x-14">
                         <div className="max-w-lg space-y-4">
                             <div className="max-w-xs">
@@ -308,7 +378,7 @@ export default function Home() {
                             </p>
                         </div>
                         <div className="space-y-5">
-                            <p className="text-blue">Distance</p>
+                            <p className="text-blue">Distance {displayCost}</p>
                         </div>
                     </div>
                     {mode === 'manual' &&
