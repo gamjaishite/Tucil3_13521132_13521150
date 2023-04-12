@@ -12,15 +12,24 @@ export interface Connections {
   [key: string]: string[];
 }
 
-
 export interface ElementUCS {
-  [key: string]:{
+  [key: string]: {
     f_score: number;
   };
 }
 export interface QueueElementUCS {
   final_score: number;
   node: string;
+}
+
+export interface Edges {
+  lat_init: number;
+  lng_init: number;
+  lat_target: number;
+  lng_target: number;
+  name: string;
+  node_init: number;
+  node_target: number;
 }
 
 export interface QueueElementAStar {
@@ -68,9 +77,9 @@ export class QElement {
   }
 }
 
-export class QElementUCS{
+export class QElementUCS {
   elementUCS: QueueElementUCS;
-  constructor(elementUCS: QueueElementUCS){
+  constructor(elementUCS: QueueElementUCS) {
     this.elementUCS = elementUCS;
   }
 }
@@ -113,10 +122,10 @@ export class PriorityQueueAStar {
 }
 
 export class PrioQueueUCS {
-  queueUCS : QueueElementUCS[];
+  queueUCS: QueueElementUCS[];
 
   constructor() {
-    this.queueUCS = []
+    this.queueUCS = [];
   }
 
   isEmpty() {
@@ -124,27 +133,26 @@ export class PrioQueueUCS {
   }
 
   size() {
-    return this.queueUCS.length
+    return this.queueUCS.length;
   }
 
   isFull() {
-    return this.queueUCS.length == this.size()
+    return this.queueUCS.length == this.size();
   }
 
   enqueue(elementUCS: QueueElementUCS) {
     let qelementUCS = new QElementUCS(elementUCS);
     this.queueUCS.push(qelementUCS.elementUCS);
 
-    for(let i = 0; i < this.size(); i++){
-      for(let j = 0; j < this.size() - i - 1; j++){
-        if(this.queueUCS[j].final_score > this.queueUCS[j+1].final_score){
+    for (let i = 0; i < this.size(); i++) {
+      for (let j = 0; j < this.size() - i - 1; j++) {
+        if (this.queueUCS[j].final_score > this.queueUCS[j + 1].final_score) {
           const temp = this.queueUCS[j];
-          this.queueUCS[j] = this.queueUCS[j+1];
-          this.queueUCS[j+1] = temp;
+          this.queueUCS[j] = this.queueUCS[j + 1];
+          this.queueUCS[j + 1] = temp;
         }
       }
     }
-
   }
 
   dequeue() {
