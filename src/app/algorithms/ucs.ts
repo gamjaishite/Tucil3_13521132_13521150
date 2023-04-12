@@ -49,7 +49,17 @@ export default function ucs(
     }
   }
 
-  return raw_path;
+  let raw_final_path: Path = {};
+  let final_path: string[] = [];
+  let reviewed_node: string = goal;
+  while (reviewed_node !== start) {
+    raw_final_path[raw_path[reviewed_node]] = reviewed_node;
+    final_path.splice(0, 0, nodes[reviewed_node].name);
+    reviewed_node = raw_path[reviewed_node];
+  }
+  final_path.splice(0, 0, nodes[start].name);
+
+  return raw_final_path;
 }
 
 export function ucsToString(path: Path, start: string, goal: string, nodes: Nodes): string {
@@ -66,9 +76,20 @@ export function ucsToString(path: Path, start: string, goal: string, nodes: Node
   return final;
 }
 
-export function returnCost(path:Path, start: string, goal:string, nodes: Nodes): number{
-  let total : number = 0;
-  let currentNode = goal; 
+export function returnCost(path: Path, start: string, goal: string, nodes: Nodes): number {
+  let total: number = 0;
+  let currentNode = goal;
 
-  return 1;
+  while (currentNode !== start) {
+    total +=
+      calculate_distance(
+        nodes[currentNode].latitude,
+        nodes[currentNode].longitude,
+        nodes[path[currentNode]].latitude,
+        nodes[path[currentNode]].longitude
+      );
+    currentNode = path[currentNode];
+  }
+
+  return total;
 }

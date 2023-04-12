@@ -1,7 +1,7 @@
 "use client";
 
 import astar, { astarToString } from "./algorithms/astar";
-import ucs, { ucsToString } from "./algorithms/ucs";
+import ucs, { returnCost, ucsToString } from "./algorithms/ucs";
 import Dropdown from "./components/dropdown";
 import Map from "./components/map";
 import { Connections, Nodes, Path } from "./lib/utils";
@@ -55,9 +55,11 @@ export default function Home() {
         let final_path = ucs(nodes, connections, initial, target);
         let endTime = performance.now();
         let stringPath = ucsToString(final_path, initial, target, nodes);
+        let cost = returnCost(final_path, initial, target, nodes);
         setPath(final_path);
         setdisplayRoute(stringPath);
         setdisplayTime((endTime - startTime).toFixed(4).toString());
+        setdisplayCost(cost);
       }
     } else if (nodes && connections && !initial && !target) {
       toast.error("Initial and target has not been decided!", {
@@ -115,6 +117,9 @@ export default function Home() {
 
         setNodes(raw_nodes);
         setConnections(raw_connections);
+        setdisplayCost(undefined);
+        setdisplayRoute(undefined);
+        setdisplayTime(undefined);
       };
       reader.readAsText(event.currentTarget.files![0]);
     }
@@ -124,7 +129,8 @@ export default function Home() {
     event.preventDefault();
   };
   const handleCheckButton = () => {
-    setNodes(undefined); setConnections(undefined)
+    setNodes(undefined); setConnections(undefined);
+    setdisplayCost(undefined);setdisplayRoute(undefined); setdisplayTime(undefined)
   }
 
   return (
@@ -256,8 +262,11 @@ export default function Home() {
                 {displayRoute}
               </p>
             </div>
-            <div className="space-y-5">
+            <div className="space-y-2">
               <p className="text-blue">Distance</p>
+              <p className="text-blue" onChange={handleStartButton}>
+                {displayCost}
+              </p>
             </div>
           </div>
         </div>

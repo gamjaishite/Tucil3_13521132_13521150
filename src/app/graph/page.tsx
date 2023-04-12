@@ -32,17 +32,7 @@ export default function GraphComponent({ nodes, connections, path }: GraphCompon
       hierarchical: false,
     },
     edges: {
-      color: (edge) => {
-        // Determine color based on path
-        const { from, to } = edge;
-        const edgeKey = `${from}-${to}`;
-        if (path && path.includes(edgeKey)) {
-          console.log("tes")
-          return { color: "red" }; // Set custom color for path edges
-        } else {
-          return { color: "#455896" }; // Default color for other edges
-        }
-      },
+      color: "#455896"
     },
     height: "600px",
   };
@@ -53,5 +43,5 @@ export default function GraphComponent({ nodes, connections, path }: GraphCompon
     },
   };
 
-  return <Graph graph={graph} options={options} events={events} />;
+  return <Graph graph={graph} options={options} events={events}  />;
 }
