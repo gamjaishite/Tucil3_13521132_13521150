@@ -29,12 +29,11 @@ export default function ucs(
     explored.add(current); 
 
     let neighbors = connections[current];
-/**asjflafa */
     if (neighbors) {
       for (const neighbor of neighbors) {
         if (!explored.has(neighbor)) { 
           let newCost = costSoFar[current].f_score + calculate_distance(nodes[current].latitude, nodes[current].longitude, nodes[neighbor].latitude, nodes[neighbor].longitude);
-          if (!costSoFar[neighbor] || newCost > costSoFar[neighbor].f_score) {
+          if (!costSoFar[neighbor] || newCost < costSoFar[neighbor].f_score) {
             costSoFar[neighbor] = { f_score: newCost };
             let priority = newCost;
             let newElement: QueueElementUCS = {
