@@ -42,6 +42,8 @@ P (-6.923100,107.603892)
 ```
 
 > Element of matrix adjecency must be 0 (not connect) or 1 (connect)
+> Make sure you have good internet connection
+> If the map is not loading properly, please kindly refresh the page :D
 
 # How to Run
 1. Clone this repository
