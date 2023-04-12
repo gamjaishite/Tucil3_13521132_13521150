@@ -1,10 +1,10 @@
-import calculate_distance, { Nodes, Path, Connections, ElementUCS, QueueElementUCS, PrioQueueUCS} from '../lib/utils';
+import calculate_distance, {Nodes, Path, Connections, ElementUCS, QueueElementUCS, PrioQueueUCS} from '../lib/utils';
 
 export default function ucs(
-  nodes: Nodes,
-  connections: Connections,
-  start: string,
-  goal: string
+    nodes: Nodes,
+    connections: Connections,
+    start: string,
+    goal: string
 ) {
   let queueUCS = new PrioQueueUCS();
   let node: QueueElementUCS = {
@@ -16,25 +16,26 @@ export default function ucs(
 
   let raw_path: Path = {};
   let costSoFar: ElementUCS = {};
-  costSoFar[start] = { f_score: 0 };
-  let explored: Set<string> = new Set(); 
+  costSoFar[start] = {f_score: 0};
+  let explored: Set<string> = new Set();
+  let currentElement;
   while (!queueUCS.isEmpty()) {
-    let currentElement = queueUCS.dequeue();
+    currentElement = queueUCS.dequeue();
     let current = currentElement!.node;
 
     if (current === goal) {
       break;
     }
 
-    explored.add(current); 
+    explored.add(current);
 
     let neighbors = connections[current];
     if (neighbors) {
       for (const neighbor of neighbors) {
-        if (!explored.has(neighbor)) { 
+        if (!explored.has(neighbor)) {
           let newCost = costSoFar[current].f_score + calculate_distance(nodes[current].latitude, nodes[current].longitude, nodes[neighbor].latitude, nodes[neighbor].longitude);
           if (!costSoFar[neighbor] || newCost < costSoFar[neighbor].f_score) {
-            costSoFar[neighbor] = { f_score: newCost };
+            costSoFar[neighbor] = {f_score: newCost};
             let priority = newCost;
             let newElement: QueueElementUCS = {
               final_score: priority,
@@ -47,6 +48,15 @@ export default function ucs(
       }
     }
   }
+
+  if (currentElement.node !== goal) {
+    return {
+      raw_path: undefined,
+      path: undefined,
+      cost: undefined,
+    };
+  }
+
 
   let raw_final_path: Path = {};
   let final_path: string[] = [];

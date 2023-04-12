@@ -84,12 +84,18 @@ export default function Home() {
                 let startTime = performance.now();
                 let final_path = ucs(nodes, connections, initial, target);
                 let endTime = performance.now();
-                let stringPath = ucsToString(final_path.path);
-                let cost = (final_path.cost);
-                setPath(final_path.raw_path);
-                setdisplayRoute(stringPath);
-                setdisplayTime((endTime - startTime).toFixed(4).toString());
-                setdisplayCost(cost);
+                if (final_path.path) {
+                    let stringPath = ucsToString(final_path.path);
+                    let cost = (final_path.cost);
+                    setPath(final_path.raw_path);
+                    setdisplayRoute(stringPath);
+                    setdisplayTime((endTime - startTime).toFixed(4).toString());
+                    setdisplayCost(cost);
+                } else {
+                    toast.warning("No Solution Found!", {
+                        position: toast.POSITION.TOP_CENTER,
+                    });
+                }
             }
         } else if (nodes && connections && !initial && !target) {
             toast.error("Initial and target has not been decided!", {
@@ -121,6 +127,20 @@ export default function Home() {
                 const raw_nodes: Nodes = {};
                 const rows = text.split("\n");
                 const data_amount = parseInt(rows[0]);
+
+                if (isNaN(data_amount) || data_amount < 0) {
+                    toast.error("Invalid input. Invalid nodes amount", {
+                        position: toast.POSITION.TOP_CENTER,
+                    });
+                    return;
+                }
+
+                if (data_amount * 2 + 1 !== rows.length) {
+                    toast.error("Invalid input. Nodes and data amount does not match", {
+                        position: toast.POSITION.TOP_CENTER,
+                    });
+                    return;
+                }
 
                 for (let i = 1; i <= data_amount; i++) {
                     if (rows[i].trim().split(" ").length != 2) {
@@ -197,7 +217,7 @@ export default function Home() {
 
     return (
         <div className="text-biru h-screen">
-            <div className="fixed right-3 top-3 z-[100000] bg-card-color p-2">
+            <div className={`${enabled ? 'hidden' : 'fixed'} right-3 top-3 z-[100000] bg-card-color p-2`}>
                 <div className="flex flex-col items-start">
                     <SwitchFile
                         setFile={(value) => {
@@ -209,7 +229,8 @@ export default function Home() {
                             setTarget(undefined);
                             setdisplayRoute(undefined);
                             setdisplayTime(undefined);
-                            setPath(undefined)
+                            setPath(undefined);
+                            setdisplayCost(undefined);
                             value ? setMode("file") : setMode("manual");
                         }}
                     />
@@ -270,6 +291,12 @@ export default function Home() {
                                     setEnabled(!enabled);
                                     setNodes({});
                                     setConnections({});
+                                    setPath(undefined);
+                                    setdisplayCost(undefined);
+                                    setInitial(undefined);
+                                    setTarget(undefined);
+                                    setdisplayTime(undefined);
+                                    setdisplayRoute(undefined);
                                 }}
                                 className="w-11 h-6 bg-gray-200 rounded-full peer  peer-focus:ring-green-300  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
                             ></div>
@@ -384,7 +411,7 @@ export default function Home() {
                             </p>
                         </div>
                         <div className="space-y-5">
-                            <p className="text-blue">Distance {displayCost}</p>
+                            <p className="text-blue">Distance: {displayCost}</p>
                         </div>
                     </div>
                     {mode === 'manual' &&
