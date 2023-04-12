@@ -1,77 +1,57 @@
-"use client";
+import React from "react";
+import Graph from "react-graph-vis";
+import { Connections, Nodes, Path } from "../lib/utils";
 
-//@ts-ignore
-import CytoscapeComponent from "react-cytoscapejs";
+interface GraphComponentProps {
+  nodes: Nodes;
+  connections: Connections;
+  path: Path;
+}
 
-export default function Graph() {
-  const elements = [
-    { data: { id: "one", label: "Node 1" }, position: { x: 100, y: 100 } },
-    { data: { id: "two", label: "Node 2" }, position: { x: 200, y: 200 } },
-    {
-      data: { source: "one", target: "two", label: "Edge from Node1 to Node2" },
+export default function GraphComponent({ nodes, connections, path }: GraphComponentProps) {
+  
+  if (!nodes || !connections) {
+    return null;
+  }
+
+  const graph = {
+    nodes: Object.keys(nodes).map((key) => ({
+      id: key,
+      label: nodes[key].name,
+      title: nodes[key].name,
+    })),
+    edges: Object.keys(connections).reduce((edgesArray, key) => {
+      const fromNode = parseInt(key);
+      const toNodes = connections[key].map((toNode) => ({ from: fromNode, to: parseInt(toNode) }));
+      return [...edgesArray, ...toNodes];
+    }, []),
+  };
+
+  const options = {
+    layout: {
+      hierarchical: false,
     },
-  ];
-  return (
-    <CytoscapeComponent
-      elements={CytoscapeComponent.normalizeElements({
-        nodes: [
-          {
-            data: { id: "one", label: "A" },
-            position: { x: 1, y: 1 },
-          },
-          {
-            data: { id: "two", label: "B" },
-            position: { x: 3, y: 3 },
-          },
-          {
-            data: { id: "C", label: "C" },
-            position: { x: 150, y: 100 },
-          },
-        ],
-        edges: [
-          {
-            data: {
-              source: "one",
-              target: "two",
-              label: "AB",
-            },
-          },
-          {
-            data: {
-              source: "two",
-              target: "C",
-              label: "BC",
-            },
-          },
-        ],
-      })}
-      stylesheet={[
-        {
-          selector: "node",
-          style: {
-            width: 1,
-            height: 1,
-            label: "data(label)",
-            "font-size": 1,
-          },
-        },
-        {
-          selector: "edge",
-          style: {
-            width: 0.2,
-            label: "data(label)",
-            "font-size": 1,
-          },
-        },
-      ]}
-      panningEnabled={true}
-      autolock={true}
-      maxZoom={10}
-      minZoom={1}
-      zoom={10}
-      boxSelectionEnabled={false}
-      autounselectify={true}
-      className="w-full h-screen text-sm"
-    />
-  );
+    edges: {
+      color: (edge) => {
+        // Determine color based on path
+        const { from, to } = edge;
+        const edgeKey = `${from}-${to}`;
+        if (path && path.includes(edgeKey)) {
+          console.log("tes")
+          return { color: "red" }; // Set custom color for path edges
+        } else {
+          return { color: "#455896" }; // Default color for other edges
+        }
+      },
+    },
+    height: "600px",
+  };
+
+  const events = {
+    select: function (event) {
+      var { nodes, edges } = event;
+    },
+  };
+
+  return <Graph graph={graph} options={options} events={events} />;
 }
