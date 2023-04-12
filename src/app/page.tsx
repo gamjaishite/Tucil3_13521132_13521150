@@ -123,6 +123,9 @@ export default function Home() {
   const handleSubmit = async (event: React.FormEvent<FileInputFormElement>) => {
     event.preventDefault();
   };
+  const handleCheckButton = () => {
+    setNodes(undefined); setConnections(undefined)
+  }
 
   return (
     <div className="text-biru h-screen">
@@ -143,6 +146,7 @@ export default function Home() {
               className="sr-only peer"
               checked={enabled}
               readOnly
+              onChange = {handleCheckButton}
             />
             <div
               onClick={() => {
