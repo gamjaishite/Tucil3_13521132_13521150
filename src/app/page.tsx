@@ -236,11 +236,15 @@ export default function Home() {
                     />
                     <SwitchNewNode setNewNode={(value) => setIsNewNode(value)}/>
                     {!isNewNode &&
-                        <DropdownNewEdge nodes={nodes} currentNode={selectedInitialNode!} connections={connections}
-                                         setConnections={(value) => setConnections(value)}
-                                         setEdges={(value) => setEdges(value)}
-                                         edges={edges}
-                        />}
+                        <div className='w-full flex items-center justify-center my-4'>
+                            <DropdownNewEdge nodes={nodes} currentNode={selectedInitialNode!} connections={connections}
+                                             setConnections={(value) => setConnections(value)}
+                                             setEdges={(value) => setEdges(value)}
+                                             edges={edges}
+                            />
+                        </div>
+                    }
+
                 </div>
             </div>
 
