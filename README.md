@@ -1,4 +1,5 @@
 # Shortest Path Finding with UCS and A*
+This project is created to fulfilled IF2211 Algorithm Strategies
 
 # Description
 ![Map](./src/public/apps2.jpg)
