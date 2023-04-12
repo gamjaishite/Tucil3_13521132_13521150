@@ -54,9 +54,9 @@ export default function Home() {
         let startTime = performance.now();
         let final_path = ucs(nodes, connections, initial, target);
         let endTime = performance.now();
-        let stringPath = ucsToString(final_path, initial, target, nodes);
-        let cost = returnCost(final_path, initial, target, nodes);
-        setPath(final_path);
+        let stringPath = ucsToString(final_path.path);
+        let cost = (final_path.cost);
+        setPath(final_path.raw_path);
         setdisplayRoute(stringPath);
         setdisplayTime((endTime - startTime).toFixed(4).toString());
         setdisplayCost(cost);
@@ -117,9 +117,11 @@ export default function Home() {
 
         setNodes(raw_nodes);
         setConnections(raw_connections);
+        setPath(undefined);
         setdisplayCost(undefined);
         setdisplayRoute(undefined);
         setdisplayTime(undefined);
+        
       };
       reader.readAsText(event.currentTarget.files![0]);
     }
@@ -129,7 +131,7 @@ export default function Home() {
     event.preventDefault();
   };
   const handleCheckButton = () => {
-    setNodes(undefined); setConnections(undefined);
+    setNodes(undefined); setConnections(undefined);setPath(undefined);
     setdisplayCost(undefined);setdisplayRoute(undefined); setdisplayTime(undefined)
   }
 
